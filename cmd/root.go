@@ -64,13 +64,13 @@ func parseArgs(args []string) (imgs inputImages, outputPath string, err error) {
 	for i := 0; i < (len(args)-1)/2; i++ {
 		channelMask := args[i*2+1]
 		if len(channelMask) != 4 {
-			err = fmt.Errorf("wrong length for channel mask: %s", channelMask)
+			err = fmt.Errorf("channel mask \"%s\" has wrong length", channelMask)
 			return
 		}
 
 		for _, c := range channelMask {
 			if !(c == 'r' || c == 'g' || c == 'b' || c == 'a' || c == 'x') {
-				err = fmt.Errorf("wrong character in channel mask: %c", c)
+				err = fmt.Errorf("illegal character \"%c\" in channel mask \"%s\"", c, channelMask)
 				return
 			}
 		}
