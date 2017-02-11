@@ -7,6 +7,7 @@ import (
 	_ "image/jpeg" // allow use of jpegs
 	"image/png"    // allow use of pngs
 	"os"
+	"path/filepath"
 
 	"github.com/spf13/cobra"
 )
@@ -81,6 +82,11 @@ func parseArgs(args []string) (imgs inputImages, outputPath string, err error) {
 	}
 
 	outputPath = args[len(args)-1]
+
+	if filepath.Ext(outputPath) != ".png" {
+		err = fmt.Errorf("only .png files are supported as output files")
+	}
+
 	return
 }
 
