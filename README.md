@@ -1,6 +1,6 @@
 # rgba-channel-merge
 
-A little command line tool to merge specific layers of multiple images into one RGBA image.
+A little command line tool to merge specific channels of multiple images into one RGBA image.
 
 ## installation
 
