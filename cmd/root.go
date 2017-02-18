@@ -16,7 +16,7 @@ import (
 type inputImage struct {
 	filepath    string
 	channelMask string // something like "rxxb" would mean that the first channel will be used as red channel, and the alpha channel will be used als blue channel
-	rgba        *image.RGBA
+	nrgba       *image.NRGBA
 }
 
 type inputImages []inputImage
@@ -104,8 +104,8 @@ func (img *inputImage) openImage() error {
 		return err
 	}
 
-	img.rgba = image.NewRGBA(inImg.Bounds())
-	draw.Draw(img.rgba, img.rgba.Bounds(), inImg, image.Point{0, 0}, draw.Src)
+	img.nrgba = image.NewNRGBA(inImg.Bounds())
+	draw.Draw(img.nrgba, img.nrgba.Bounds(), inImg, image.Point{0, 0}, draw.Src)
 
 	return nil
 }
@@ -115,7 +115,7 @@ func (images inputImages) openImages() (maxSize image.Point, err error) {
 		if err = images[i].openImage(); err != nil {
 			return
 		}
-		imgSize := images[i].rgba.Bounds().Size()
+		imgSize := images[i].nrgba.Bounds().Size()
 		if imgSize.X > maxSize.X {
 			maxSize.X = imgSize.X
 		}
@@ -127,22 +127,22 @@ func (images inputImages) openImages() (maxSize image.Point, err error) {
 }
 
 func (img inputImage) mergeChannels(outImg *image.NRGBA) {
-	if len(img.rgba.Pix) > len(outImg.Pix) {
+	if len(img.nrgba.Pix) > len(outImg.Pix) {
 		// should not happen because the maximum size of all input images will be used for the output image
-		panic(fmt.Sprintf("input image is bigger than output image: input: %v, output: %v", img.rgba.Bounds(), outImg.Bounds()))
+		panic(fmt.Sprintf("input image is bigger than output image: input: %v, output: %v", img.nrgba.Bounds(), outImg.Bounds()))
 	}
 
-	for i := 0; i < len(img.rgba.Pix)/4; i++ {
+	for i := 0; i < len(img.nrgba.Pix)/4; i++ {
 		for j := 0; j < 4; j++ {
 			switch img.channelMask[j] {
 			case 'r':
-				outImg.Pix[i*4+0] = img.rgba.Pix[i*4+j]
+				outImg.Pix[i*4+0] = img.nrgba.Pix[i*4+j]
 			case 'g':
-				outImg.Pix[i*4+1] = img.rgba.Pix[i*4+j]
+				outImg.Pix[i*4+1] = img.nrgba.Pix[i*4+j]
 			case 'b':
-				outImg.Pix[i*4+2] = img.rgba.Pix[i*4+j]
+				outImg.Pix[i*4+2] = img.nrgba.Pix[i*4+j]
 			case 'a':
-				outImg.Pix[i*4+3] = img.rgba.Pix[i*4+j]
+				outImg.Pix[i*4+3] = img.nrgba.Pix[i*4+j]
 			case 'x':
 				// do nothing
 			default:
