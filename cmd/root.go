@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"image"
+	"image/color"
 	"image/draw"
 	_ "image/jpeg" // allow use of jpegs
 	"image/png"    // allow use of pngs
@@ -40,7 +41,8 @@ The channel masks for each image should match the regex [rgbax]{4}, with r, g, b
 			os.Exit(2)
 		}
 
-		outImg := image.NewRGBA(image.Rectangle{Min: image.Point{0, 0}, Max: maxSize})
+		outImg := image.NewNRGBA(image.Rectangle{Min: image.Point{0, 0}, Max: maxSize})
+		draw.Draw(outImg, outImg.Bounds(), &image.Uniform{color.RGBA{0, 0, 0, 255}}, image.ZP, draw.Src)
 
 		imgs.mergeChannels(outImg)
 
@@ -124,7 +126,7 @@ func (images inputImages) openImages() (maxSize image.Point, err error) {
 	return
 }
 
-func (img inputImage) mergeChannels(outImg *image.RGBA) {
+func (img inputImage) mergeChannels(outImg *image.NRGBA) {
 	if len(img.rgba.Pix) > len(outImg.Pix) {
 		// should not happen because the maximum size of all input images will be used for the output image
 		panic(fmt.Sprintf("input image is bigger than output image: input: %v, output: %v", img.rgba.Bounds(), outImg.Bounds()))
@@ -151,7 +153,7 @@ func (img inputImage) mergeChannels(outImg *image.RGBA) {
 	}
 }
 
-func (images inputImages) mergeChannels(outImg *image.RGBA) {
+func (images inputImages) mergeChannels(outImg *image.NRGBA) {
 	for _, img := range images {
 		img.mergeChannels(outImg)
 	}
